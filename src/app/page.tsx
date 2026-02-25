@@ -1,65 +1,175 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import Navbar from "@/components/public-layout/Navbar";
+import { ArrowRight, CheckCircle, Cpu, FileSearch, Mail, MessagesSquare, UserCheck } from "lucide-react";
+
+export default function HomePage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="bg-bg text-text">
+      <Navbar />
+
+
+      {/* HERO */}
+      <section className="max-w-7xl mx-auto px-6 pt-28 pb-32 text-center relative">
+
+        {/* Hero glow */}
+        <div className="absolute inset-0 mx-auto max-w-2xl blur-[120px] opacity-25 bg-primary -z-10"></div>
+
+        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
+          Automate Your Hiring with  
+          <span className="text-primary"> AI Recruiting Agents</span>
+        </h1>
+
+        <p className="mt-6 text-lg text-subtext max-w-2xl mx-auto leading-relaxed">
+          From resume screening to outreach, AI chat interviews and scheduling.
+          Your entire pipeline — fully automated and 10× faster.
+        </p>
+
+        <div className="flex justify-center gap-4 mt-10">
+          <button className="px-7 py-3 bg-primary text-white rounded-xl hover:bg-primary/90 shadow-md flex items-center gap-2">
+            Start Free <ArrowRight size={16} />
+          </button>
+
+          <button className="px-7 py-3 border border-theme rounded-xl hover-theme">
+            Watch Demo
+          </button>
+        </div>
+
+        {/* Dashboard UI block */}
+        <div className="mt-20 rounded-2xl border border-theme bg-card/60 backdrop-blur-xl p-4 shadow-xl">
+          {/* <div className="h-[340px] bg-surface rounded-xl flex items-center justify-center text-subtext text-sm">
+            Dashboard Preview Coming Soon
+          </div> */}
+          <img src="/assets/img/dashboard.png" ></img>
+        </div>
+      </section>
+
+
+      {/* VALUE STATS */}
+      <section className="max-w-6xl mx-auto px-6 pb-20 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        {[
+          { value: "10,000+", label: "Resumes Screened" },
+          { value: "65%",   label: "Faster Hiring Cycles" },
+          { value: "24/7",  label: "AI Always Working" },
+          { value: "98%",   label: "Relevancy Accuracy" }
+        ].map((s, i) => (
+          <div key={i}>
+            <p className="text-3xl font-bold">{s.value}</p>
+            <p className="text-sm text-subtext mt-1">{s.label}</p>
+          </div>
+        ))}
+      </section>
+
+
+      {/* FEATURES — PREMIUM GRID */}
+      <section className="max-w-7xl mx-auto px-6 py-24">
+        <h2 className="text-3xl md:text-4xl font-bold text-center">
+          Why Companies Choose Our AI Hiring Agent
+        </h2>
+
+        <p className="text-subtext text-center max-w-xl mx-auto mt-3">
+          Built for modern HR teams that want speed, accuracy and automation.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-14">
+          {[
+            {
+              icon: <FileSearch size={28} className="text-primary" />,
+              title: "AI Resume Screening",
+              desc: "Reads resumes, extracts skills and ranks candidates instantly."
+            },
+            {
+              icon: <Mail size={28} className="text-primary" />,
+              title: "Automated Outreach",
+              desc: "Sends human-like personalised messages via Email & WhatsApp."
+            },
+            {
+              icon: <MessagesSquare size={28} className="text-primary" />,
+              title: "AI Chat Interviews",
+              desc: "Conducts structured interviews, evaluates responses and scores candidates."
+            },
+            {
+              icon: <Cpu size={28} className="text-primary" />,
+              title: "Skill & Experience Scoring",
+              desc: "Analyzes keywords, seniority level, tech stack and relevance."
+            },
+            {
+              icon: <UserCheck size={28} className="text-primary" />,
+              title: "Shortlisting + Decision Making",
+              desc: "Picks only the most relevant profiles for HR to review."
+            },
+            {
+              icon: <CheckCircle size={28} className="text-primary" />,
+              title: "Interview Scheduling",
+              desc: "Books meetings with candidates based on availability."
+            },
+          ].map((f, i) => (
+            <div
+              key={i}
+              className="p-7 rounded-2xl border border-theme bg-card shadow-sm hover:shadow-lg transition"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              <div className="mb-4">{f.icon}</div>
+              <h3 className="text-lg font-semibold">{f.title}</h3>
+              <p className="text-sm text-subtext mt-2 leading-relaxed">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+
+      {/* WORKFLOW — MORE PREMIUM */}
+      <section className="max-w-6xl mx-auto px-6 py-24">
+        <h2 className="text-3xl font-bold text-center">How It Works</h2>
+        <p className="text-subtext text-center max-w-xl mx-auto mt-2">
+          A fully automated hiring engine — your AI teammate.
+        </p>
+
+        <div className="mt-14 space-y-8">
+          {[
+            "Upload resumes & job description",
+            "AI screens, scores & ranks candidates",
+            "AI sends personalised outreach",
+            "AI conducts a structured chat interview",
+            "AI identifies top candidates & schedules interview",
+          ].map((step, i) => (
+            <div
+              key={i}
+              className="p-5 rounded-xl border border-theme bg-card flex items-start gap-4 hover:bg-card/80 transition"
             >
-              Learning
-            </a>{" "}
-            center.
+              <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">
+                {i + 1}
+              </div>
+              <p className="text-sm md:text-base">{step}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+
+      {/* CTA SECTION */}
+      <section className="max-w-4xl mx-auto px-6 py-24 text-center">
+        <div className="p-12 rounded-2xl border border-theme bg-card shadow-xl">
+          <h2 className="text-3xl font-bold">Hire Faster. Smarter. With AI.</h2>
+          <p className="text-subtext mt-2">
+            Start your first AI-powered hiring session within minutes.
           </p>
+
+          <div className="mt-8 flex justify-center gap-4">
+            <button className="px-7 py-3 bg-primary text-white rounded-xl hover:bg-primary/90">
+              Start For Free
+            </button>
+            <button className="px-7 py-3 border border-theme rounded-xl hover-theme">
+              Contact Sales
+            </button>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </section>
+
+
+      {/* FOOTER */}
+      <footer className="border-t border-theme py-10 text-center text-sm text-subtext">
+        © {new Date().getFullYear()} EmergiHire — All Rights Reserved.
+      </footer>
     </div>
   );
 }

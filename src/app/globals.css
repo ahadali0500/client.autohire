@@ -1,26 +1,193 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================
+   ROOT THEME VARIABLES
+============================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-primary: "Poppins", sans-serif;
+
+  /* Base UI */
+  --bg: #ffffff;
+  --bg-blur: rgba(255, 255, 255, 0.6);
+  --text: #0f172a;
+  --subtext: #475569;
+  --border: #e2e8f0;
+  --card: #ffffff;
+
+  /* Brand */
+  --primary: #5286ff;
+  --primary-hover: #3b6ef3;
+  --primary-light: #e5efff;
+
+  /* Neutrals */
+  --hover-bg: #f3f5f9;
+  --hover-border: #e8ecf3;
+  --surface: #f8fafc;
+
+  /* Semantic */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+
+  /* Shadows */
+  --shadow: rgba(0, 0, 0, 0.05);
+  --shadow-strong: rgba(0, 0, 0, 0.15);
+
+  /* Overlays */
+  --overlay: rgba(0, 0, 0, 0.4);
+
+  /* Slider */
+  --slider-fill: var(--primary);
+  --slider-empty: #d4d4d4;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ============================
+   DARK THEME VARIABLES
+============================ */
+.dark {
+  --font-primary: "Poppins", sans-serif;
+
+  /* Base UI */
+  --bg: #0e1016;
+  --bg-blur: rgba(14, 16, 22, 0.6);
+  --text: #ffffff;
+  --subtext: #b0b9c6;
+  --border: #272c35;
+  --card: #13171e;
+
+  /* Brand */
+  --primary: #5286ff;
+  --primary-hover: #3b6ef3;
+  --primary-light: #1d2d50;
+
+  /* Neutrals */
+  --hover-bg: #1a1d24;
+  --hover-border: #272c35;
+  --surface: #181b22;
+
+  /* Semantic */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+
+  /* Shadows */
+  --shadow: rgba(0, 0, 0, 0.45);
+  --shadow-strong: rgba(0, 0, 0, 0.6);
+
+  /* Overlays */
+  --overlay: rgba(0, 0, 0, 0.7);
+
+  /* Slider */
+  --slider-fill: var(--primary);
+  --slider-empty: #3a3a3a;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+
+@theme {
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-bg: var(--bg);
+  --color-text: var(--text);
+  --color-card: var(--card);
 }
 
+/* ============================
+   GLOBAL ELEMENTS
+============================ */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-primary) !important;
 }
+
+/* ============================
+   UTILITY THEMES
+============================ */
+.border-theme {
+  border-color: var(--hover-border);
+}
+
+.sidebar-theme {
+  background-color: var(--bg);
+}
+
+.hover-theme:hover {
+  background-color: var(--hover-bg);
+  border-color: var(--hover-border);
+}
+
+.card-theme {
+  background-color: var(--card);
+  border-color: var(--hover-border);
+}
+
+/* ============================
+   SELECT THEME
+============================ */
+.select-theme {
+  background-color: transparent !important;
+  color: var(--text) !important;
+  font-family: var(--font-primary);
+}
+
+.select-theme option {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+/* ============================
+   RANGE SLIDER (FIXED)
+============================ */
+.range-theme {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  background: var(--slider-empty);
+  border-radius: 4px;
+}
+
+.range-theme::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 4px;
+  background: linear-gradient(
+    to right,
+    var(--slider-fill) 0%,
+    var(--slider-fill) var(--percent, 0%),
+    var(--slider-empty) var(--percent, 0%),
+    var(--slider-empty) 100%
+  );
+}
+
+.range-theme::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--bg);
+  border: 2px solid var(--slider-fill);
+  border-radius: 50%;
+  margin-top: -6px;
+}
+
+.range-theme::-moz-range-progress {
+  background: var(--slider-fill);
+  height: 6px;
+}
+
+.range-theme::-moz-range-track {
+  background: var(--slider-empty);
+  height: 6px;
+}
+
+@keyframes slide-left {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0%); }
+}
+
+.animate-slide-left {
+  animation: slide-left 0.3s ease-out;
+}
+
