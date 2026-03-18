@@ -75,7 +75,6 @@ export default function Root({ children }: any) {
                         {children}
                     </section>
                 </main>
-
             </div>
         </div>
     )

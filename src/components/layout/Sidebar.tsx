@@ -1,8 +1,39 @@
-import { BadgePlus, CircleUserRound, Crown, Gem, House, Settings, History } from 'lucide-react'
+"use client";
+
+import { BadgePlus, CircleUserRound, Crown, Gem, House, Settings, History, LogOut } from 'lucide-react'
 import Link from 'next/link';
-import React from 'react'
+import React, { useState, useRef, useEffect } from 'react'
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { logout } from '@/store/slices/authSlice';
+import { useRouter } from 'next/navigation';
 
 export default function Sidebar(data: { collapse: boolean }) {
+    const [openUserMenu, setOpenUserMenu] = useState(false);
+    const menuRef = useRef<HTMLDivElement | null>(null);
+    const dispatch = useAppDispatch();
+    const router = useRouter();
+    const { user } = useAppSelector(state => state.auth);
+
+    useEffect(() => {
+        const handler = (e: any) => {
+            if (menuRef.current && !menuRef.current.contains(e.target)) {
+                setOpenUserMenu(false);
+            }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, []);
+
+    const handleLogout = () => {
+        dispatch(logout());
+        router.push("/signin");
+    };
+
+    // Get user initials
+    const getInitials = (name: string | undefined) => {
+        if (!name) return "U";
+        return name.split(' ').map(n => n[0]).join('').toUpperCase();
+    };
 
     const sidebarItems = [
         {
@@ -83,16 +114,19 @@ export default function Sidebar(data: { collapse: boolean }) {
                     ))}
                 </div>
 
-                <div className="border-t card-theme border-theme p-3 space-y-2">
-                    <div className={`flex items-center px-3 py-2 rounded-lg cursor-pointer transition ${data.collapse ? "justify-center" : "justify-between"}`}>
+                <div className="border-t card-theme border-theme p-3 space-y-2 relative" ref={menuRef}>
+                    <div 
+                        className={`flex items-center px-3 py-2 rounded-lg cursor-pointer transition ${data.collapse ? "justify-center" : "justify-between"} hover-theme`}
+                        onClick={() => !data.collapse && setOpenUserMenu(!openUserMenu)}
+                    >
                         <div className="flex items-center space-x-3">
                             <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
-                                EM
+                                {getInitials(user?.name)}
                             </div>
 
                             {!data.collapse && (
                                 <div className="flex flex-col leading-tight">
-                                    <span className="text-sm font-medium">Emergi Mentor</span>
+                                    <span className="text-sm font-medium">{user?.name || "User"}</span>
                                     <span className="text-xs text-blue-500 dark:text-blue-400 bg-blue-500/10 dark:bg-blue-400/10 px-2 py-[2px] rounded-md w-fit">
                                         Free
                                     </span>
@@ -109,6 +143,32 @@ export default function Sidebar(data: { collapse: boolean }) {
                             </Link>
                         )}
                     </div>
+
+                    {/* USER DROPDOWN MENU */}
+                    {!data.collapse && openUserMenu && (
+                        <div className="absolute bottom-full mb-2 left-0 w-full card-theme border-2 card-border-theme rounded-xl shadow-lg p-2 animate-slideDown z-50">
+                            <div className="px-3 py-2 border-b border-theme mb-1">
+                                {user && (
+                                    <div className="text-sm">
+                                        <p className="font-medium">{user.name}</p>
+                                        <p className="text-gray-500">{user.email}</p>
+                                    </div>
+                                )}
+                            </div>
+                            <Link href="/agent/setting" className={`flex justify-start px-3 py-2 rounded-lg cursor-pointer hover-theme border border-transparent transition text-sm`}>
+                                <Settings size={16} /> <span className="ml-3 mt-[-1px]">Account</span>
+                            </Link>
+                            <Link href="/pricing" className={`flex justify-start px-3 py-2 rounded-lg cursor-pointer hover-theme border border-transparent transition text-sm`}>
+                                <Crown size={16} /> <span className="ml-3 mt-[-1px]">Pricing</span>
+                            </Link>
+                            <div
+                                onClick={handleLogout}
+                                className={`flex justify-start px-3 py-2 rounded-lg cursor-pointer hover-theme border border-transparent transition text-sm text-red-500 dark:text-red-400`}
+                            >
+                                <LogOut size={16} /> <span className="ml-3 mt-[-1px]">Logout</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
 

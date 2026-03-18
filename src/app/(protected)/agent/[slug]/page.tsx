@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { Pause, Ban } from "lucide-react";
-import AgentPipeline from "./AgentPipeline";
+import AgentPipeline, { Step } from "./AgentPipeline";
 
 interface Candidate {
     id: string;
@@ -37,7 +37,7 @@ export default function AgentSessionPage() {
 
     const [phase, setPhase] = useState(1);
 
-    const steps = [
+    const steps: Step[] = [
         { id: 1, label: "Resume Screening", status: "completed" },
         { id: 2, label: "Shortlisting", status: "completed" },
         { id: 3, label: "Outreach", status: "running" },
