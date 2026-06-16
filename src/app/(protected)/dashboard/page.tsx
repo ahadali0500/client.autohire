@@ -17,39 +17,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-
-const sessions = [
-  {
-    id: "sess-001",
-    title: "Senior Data Engineer",
-    started: "Nov 25, 03:00 PM",
-    resumes: "18/40",
-    shortlisted: 12,
-    outreach: 8,
-    conversations: 3,
-    status: "Running",
-  },
-  {
-    id: "sess-002",
-    title: "Product Manager",
-    started: "Nov 24, 07:00 PM",
-    resumes: "35/35",
-    shortlisted: 22,
-    outreach: 20,
-    conversations: 10,
-    status: "Completed",
-  },
-  {
-    id: "sess-003",
-    title: "Full Stack Developer",
-    started: "Nov 23, 02:00 PM",
-    resumes: "22/50",
-    shortlisted: 10,
-    outreach: 9,
-    conversations: 2,
-    status: "Paused",
-  },
-];
+import { useGetAllAgents } from "@/hooks/useGetAllAgents";
+import { useDashboard } from "@/hooks/useDashboard";
 
 const badgeColor = {
   Running: "bg-blue-100 text-blue-600",
@@ -58,13 +27,13 @@ const badgeColor = {
 };
 
 export default function SystemDashboard() {
+  const { data, isLoading } = useGetAllAgents();
+  const agents = (data?.result || []).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 3);
 
-  const activityFeed = [
-    "John Doe replied to outreach (Data Analyst)",
-    "AI Agent screened 12 new resumes",
-    "Interview scheduled for DevOps position",
-    "Outreach sent to 15 new candidates",
-  ];
+
+  const { data: dashboardData, isLoading: dashboardLoading } = useDashboard();
+  const metrics = dashboardData?.metrics;
+  const logs = dashboardData?.logs || [];
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-8">
@@ -80,76 +49,127 @@ export default function SystemDashboard() {
         </button>
       </div>
 
-      <MetricGrid />
+      <MetricGrid metrics={metrics} />
 
-      <div className="flex gap-2">
-        <div className="flex-1 bg-card border border-theme rounded-xl p-6 space-y-3">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Activity size={18} /> Live Activity Feed
-          </h2>
 
-          <div className="space-y-2">
-            {activityFeed.map((item, i) => (
-              <p key={i} className="text-sm p-2 bg-surface rounded-lg border border-theme">
-                {item}
-              </p>
-            ))}
-          </div>
-        </div>
-      </div>
 
-      <div className="space-y-4">
-        {sessions.map((s) => (
-          <Link
-            key={s.id}
-            href={`/agent/${s.id}`}
-            className="block p-5 rounded-xl bg-card shadow-sm hover:shadow-md transition"
-          >
-            {/* HEADER ROW */}
-            <div className="flex justify-between items-center mb-3">
+      <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
+        {dashboardLoading ? (
+          <p className="text-sm text-subtext">Loading activity...</p>
+        ) : logs.length === 0 ? (
+          <p className="text-sm text-subtext">No activity found</p>
+        ) : (
+          logs.slice(0, 6).map((log, i) => (
+            <div
+              key={i}
+              className="text-sm p-2 bg-surface rounded-lg border border-theme flex justify-between items-start gap-2"
+            >
               <div>
-                <h2 className="font-medium text-md">{s.title}</h2>
-                <p className="text-xs text-subtext">ID: {s.id}</p>
+                <p className="font-medium">{log.text}</p>
+                <span className="text-[10px] text-subtext">
+                  {new Date(log.timestamp).toLocaleString()}
+                </span>
               </div>
 
-              <span
-                className={`px-3 py-1 text-xs rounded-full font-medium ${badgeColor[s.status]}`}
-              >
-                {s.status}
+              <span className={`
+          text-[10px] px-2 py-0.5 rounded-full
+          ${log.status === "SUCCESS" ? "bg-green-100 text-green-600" :
+                  log.status === "STEP" ? "bg-blue-100 text-blue-600" :
+                    "bg-slate-100 text-slate-600"}
+        `}>
+                {log.status}
               </span>
             </div>
+          ))
+        )}
+      </div>
 
-            {/* MINI STATS ROW */}
-            <div className="flex flex-wrap gap-6 text-xs">
 
-              <div className="flex items-center gap-2 text-subtext">
-                <Calendar size={14} />
-                <span>{s.started}</span>
+      <div className="space-y-4 mt-4">
+
+        {isLoading ? (
+          <p className="text-sm text-subtext">Loading agents...</p>
+        ) : agents.length === 0 ? (
+          <p className="text-sm text-subtext">No agents found</p>
+        ) : (
+          agents.map((s) => (
+            <Link
+              key={s.agent_id}
+              href={`/agent/${s.agent_id}`}
+              className="group block relative p-6 rounded-2xl bg-card border border-theme shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 overflow-hidden"
+            >
+              {/* LEFT ACCENT */}
+              <div className={`absolute left-0 top-0 bottom-0 w-1 ${s.state === 'active' ? 'bg-emerald-500' : 'bg-slate-300 opacity-50'}`} />
+
+              <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-6">
+
+                {/* LEFT SIDE */}
+                <div className="flex-1 space-y-2 min-w-0">
+
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h2 className="font-bold text-lg truncate">{s.job_title}</h2>
+
+                    <span className="px-2 py-0.5 text-[9px] uppercase rounded-full bg-slate-100 text-slate-600">
+                      {s.state}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-subtext flex items-center gap-2">
+                    <Calendar size={12} />
+                    {new Date(s.created_at).toLocaleDateString()}
+                  </p>
+
+                  <div className="text-xs font-semibold text-primary">
+                    {s.status?.replaceAll('-', ' ')}
+                  </div>
+                </div>
+
+                {/* RIGHT SIDE */}
+                <div className="flex flex-wrap items-center gap-6 lg:border-l border-theme lg:pl-6">
+
+                  <div className="min-w-[60px] text-center">
+                    <Users size={14} className="mx-auto text-blue-500" />
+                    <p className="font-bold">{s.total_candidates}</p>
+                    <span className="text-[10px] text-subtext">Candidates</span>
+                  </div>
+
+                  <div className="min-w-[60px] text-center">
+                    <User size={14} className="mx-auto text-purple-500" />
+                    <p className="font-bold">{s.shortlisted_candidates}</p>
+                    <span className="text-[10px] text-subtext">Shortlist</span>
+                  </div>
+
+                  <div className="min-w-[60px] text-center">
+                    <Send size={14} className="mx-auto text-green-600" />
+                    <p className="font-bold">{s.outreach_sent}</p>
+                    <span className="text-[10px] text-subtext">Outreach</span>
+                  </div>
+
+                  <div className="min-w-[60px] text-center">
+                    <Calendar size={14} className="mx-auto text-orange-500" />
+                    <p className="font-bold">{s.interviews_scheduled}</p>
+                    <span className="text-[10px] text-subtext">Interviews</span>
+                  </div>
+
+                </div>
               </div>
+            </Link>
+          ))
+        )}
 
-              <div className="flex items-center gap-2">
-                <Users size={14} className="text-blue-500" />
-                <span>{s.resumes} candidates</span>
-              </div>
+        {/* CTA */}
+        {!isLoading && agents.length > 0 && (
+          <div className="flex justify-center pt-2">
+            <Link
+              href="/agent"
+              className="px-6 py-2.5 text-sm font-medium rounded-xl border border-theme hover:border-primary hover:text-primary transition-all flex items-center gap-2"
+            >
+              Show More
+              <ChevronRight size={16} />
+            </Link>
+          </div>
+        )}
 
-              <div className="flex items-center gap-2">
-                <User size={14} className="text-purple-500" />
-                <span>{s.shortlisted} shortlisted</span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Send size={14} className="text-green-600" />
-                <span>{s.outreach} outreach</span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <MessageSquare size={14} className="text-orange-500" />
-                <span>{s.conversations} conversations</span>
-              </div>
-
-            </div>
-          </Link>
-        ))}
       </div>
 
       {/* ----------------------------------------------
@@ -167,22 +187,20 @@ export default function SystemDashboard() {
 /* ============================================================
    BEAUTIFUL METRIC GRID
 ============================================================ */
-function MetricGrid() {
-  const metrics = [
-    { label: "Total Candidates", value: "4,320", icon: <Users /> },
-    { label: "Outreach Sent", value: "1,890", icon: <Send /> },
-    { label: "Conversations", value: "640", icon: <MessageSquare /> },
-    { label: "Interviews", value: "27", icon: <Calendar /> },
-    { label: "Agents Running", value: "5", icon: <Bot /> },
+
+function MetricGrid({ metrics }: any) {
+  const data = [
+    { label: "Total Candidates", value: metrics?.total_candidates || 0, icon: <Users /> },
+    { label: "Outreach Sent", value: metrics?.outreach_sent || 0, icon: <Send /> },
+    { label: "Conversations", value: metrics?.conversations || 0, icon: <MessageSquare /> },
+    { label: "Interviews", value: metrics?.interviews || 0, icon: <Calendar /> },
+    { label: "Agents Running", value: metrics?.agents_running || 0, icon: <Bot /> },
   ];
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-      {metrics.map((m, i) => (
-        <div
-          key={i}
-          className="p-4 bg-card border border-theme rounded-xl hover:shadow-lg transition-all"
-        >
+      {data.map((m, i) => (
+        <div key={i} className="p-4 bg-card border border-theme rounded-xl hover:shadow-lg transition-all">
           <div className="w-10 h-10 bg-primary/10 text-primary flex items-center justify-center rounded-lg mb-2">
             {m.icon}
           </div>
@@ -212,56 +230,3 @@ function Chart({ data }) {
   );
 }
 
-/* ============================================================
-   AGENT CONTROLS (play/pause/stop)
-============================================================ */
-function AgentControls({ agent }) {
-  return (
-    <div className="flex gap-2 mt-3">
-      <button className="px-3 py-1 text-xs bg-primary text-white rounded-lg flex items-center gap-1">
-        <Play size={14} /> Start
-      </button>
-      <button className="px-3 py-1 text-xs bg-yellow-500 text-white rounded-lg flex items-center gap-1">
-        <Pause size={14} /> Pause
-      </button>
-      <button className="px-3 py-1 text-xs bg-red-500 text-white rounded-lg flex items-center gap-1">
-        <Square size={14} /> Stop
-      </button>
-    </div>
-  );
-}
-
-/* ============================================================
-   AGENT DETAIL SIDE PANEL
-============================================================ */
-function AgentSidePanel({ agent, onClose }) {
-  return (
-    <div className="fixed top-0 right-0 w-96 h-full bg-card border-l border-theme p-6 shadow-xl z-50 animate-slide-left">
-      <button onClick={onClose} className="text-xs text-subtext mb-4">Close</button>
-
-      <h2 className="text-lg font-semibold mb-2">{agent.name}</h2>
-
-      <p className="text-sm mb-4">
-        Status:{" "}
-        <span className={agent.status === "Running" ? "text-green-500" : "text-yellow-500"}>
-          {agent.status}
-        </span>
-      </p>
-
-      <div className="space-y-3">
-        <p className="text-sm p-2 bg-surface rounded-lg border border-theme">
-          Candidates processed: {agent.candidates}
-        </p>
-        <p className="text-sm p-2 bg-surface rounded-lg border border-theme">
-          Outreach sent: {agent.outreach}
-        </p>
-        <p className="text-sm p-2 bg-surface rounded-lg border border-theme">
-          Conversations: {agent.conversations}
-        </p>
-        <p className="text-sm p-2 bg-surface rounded-lg border border-theme">
-          Pipeline progress: {agent.progress}%
-        </p>
-      </div>
-    </div>
-  );
-}

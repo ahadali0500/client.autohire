@@ -1,52 +1,55 @@
 "use client";
 
-interface Step {
-  id: number;
-  label: string;
-  status: "completed" | "running" | "pending" | "failed";
-}
-
-
+import { AgentStats } from "@/types/agent";
 import {
   Users,
   MessageSquare,
   Send,
   CheckCircle,
   Clock,
-  Zap,
-  BarChart3,
-  Target,
 } from "lucide-react";
-import { useState } from "react";
+
+export interface Step {
+  id: number;
+  label: string;
+  status: "completed" | "running" | "pending" | "failed";
+}
 
 export default function AgentPipeline({
   steps,
-  selected,
-  onSelect,
+  stats,
+  state
 }: {
   steps: Step[];
-  selected: number;
-  onSelect: (id: number) => void;
+  stats: AgentStats;
+  state: 'pending' | 'running' | 'paused' | 'stopped' | 'completed';
 }) {
-
-
-  const [stats] = useState({
-    totalCandidates: 140,
-    shortlisted: 58,
-    outreachSent: 44,
-    conversations: 17,
-    interviews: 9,
-    agentStatus: "Running",
-  });
 
   return (
     <>
       <div className="border border-theme bg-card rounded-xl p-5">
+        <div className="flex justify-between items-center mb-6 px-2">
+            <h3 className="text-sm font-bold  text-subtext flex items-center gap-2">
+                Pipeline Status
+            </h3>
+            <span
+                className={`px-3 py-1 rounded-full text-xs font-bold border ${
+                state === "running"
+                    ? "bg-green-100 text-green-700 border-green-200"
+                    : state === "paused"
+                    ? "bg-yellow-100 text-yellow-700 border-yellow-200"
+                    : state === "stopped"
+                    ? "bg-red-100 text-red-700 border-red-200"
+                    : "bg-gray-100 text-gray-700 border-gray-200"
+                }`}
+            >
+                {state}
+            </span>
+        </div>
         <div className="flex justify-between items-start">
           {steps.map((step) => (
             <div
               key={step.id}
-              onClick={() => onSelect(step.id)}
               className="flex flex-col items-center w-full cursor-pointer"
             >
               <div
@@ -60,7 +63,7 @@ export default function AgentPipeline({
               `}
               >
                 {step.status === "completed" && "✔"}
-                {step.status === "running" && "⏳"}
+                {step.status === "running" && <span className="animate-breathing">⏳</span>}
                 {step.status === "pending" && "•"}
               </div>
 
@@ -68,9 +71,6 @@ export default function AgentPipeline({
                 {step.label}
               </p>
 
-              {step.id !== steps.length && (
-                <div className="h-[2px] bg-hover-border w-full mt-2"></div>
-              )}
             </div>
           ))}
         </div>
@@ -78,23 +78,23 @@ export default function AgentPipeline({
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-5">
 
-        <Card icon={<Users size={20} />} label="Total Candidates" value={stats.totalCandidates} />
+        <Card icon={<Users size={20} />} label="Total Candidates" value={stats.total_candidates} />
 
         <Card
           icon={<CheckCircle size={20} />}
           label="Shortlisted"
-          value={stats.shortlisted}
+          value={stats.shortlisted_candidates}
         />
 
-        <Card icon={<Send size={20} />} label="Outreach Sent" value={stats.outreachSent} />
+        <Card icon={<Send size={20} />} label="Outreach Sent" value={stats.outreach_sent} />
 
         <Card
           icon={<MessageSquare size={20} />}
-          label="Conversations"
-          value={stats.conversations}
+          label="Parsed Candidates"
+          value={stats.parsed_candidates}
         />
 
-        <Card icon={<Clock size={20} />} label="Interviews Scheduled" value={stats.interviews} />
+        <Card icon={<Clock size={20} />} label="Interviews Scheduled" value={stats.interviews_scheduled} />
 
       </div>
     </>

@@ -24,7 +24,7 @@
   /* Neutrals */
   --hover-bg: #f3f5f9;
   --hover-border: #e8ecf3;
-  --surface: #f8fafc;
+  --surface: #eceef0;
 
   /* Semantic */
   --success: #22c55e;
@@ -93,6 +93,9 @@
   --color-bg: var(--bg);
   --color-text: var(--text);
   --color-card: var(--card);
+  --color-surface: var(--surface);
+  --color-subtext: var(--subtext);
+  --color-border: var(--border);
 }
 
 /* ============================
@@ -191,3 +194,11 @@ body {
   animation: slide-left 0.3s ease-out;
 }
 
+@keyframes breathing {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.animate-breathing {
+  animation: breathing 2s ease-in-out infinite;
+}
