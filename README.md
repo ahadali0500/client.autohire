@@ -11,11 +11,11 @@ The AI pipeline, API, and background worker live in the backend repository: **[s
 
 ```mermaid
 flowchart LR
-    A[Sign up / Log in] --> B[Connect Google account<br/>Gmail + Calendar]
-    B --> C[Create agent<br/>role, skills, threshold,<br/>interview slots, resumes]
-    C --> D[Watch the agent live<br/>pipeline + streaming logs]
-    D --> E[Review candidates<br/>scores & explanations]
-    F[Candidate opens email link] --> G[Public scheduling page<br/>books an interview slot]
+    A["Sign up or log in"] --> B["Connect Google account<br/>Gmail and Calendar"]
+    B --> C["Create agent<br/>role, skills, threshold,<br/>interview slots, resumes"]
+    C --> D["Watch the agent live<br/>pipeline and streaming logs"]
+    D --> E["Review candidates<br/>scores and explanations"]
+    F["Candidate opens email link"] --> G["Public scheduling page<br/>books an interview slot"]
 ```
 
 ### Features
