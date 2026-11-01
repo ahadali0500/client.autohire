@@ -28,7 +28,7 @@ export default function AgentPipeline({
   return (
     <>
       <div className="border border-theme bg-card rounded-xl p-5">
-        <div className="flex justify-between items-center mb-6 px-2">
+        <div className="flex justify-between items-center mb-2 px-2">
             <h3 className="text-sm font-bold  text-subtext flex items-center gap-2">
                 Pipeline Status
             </h3>
@@ -76,7 +76,7 @@ export default function AgentPipeline({
         </div>
 
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-3">
 
         <Card icon={<Users size={20} />} label="Total Candidates" value={stats.total_candidates} />
 

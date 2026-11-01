@@ -1,35 +1,29 @@
 type OutreachTemplateTabProps = {
   template: string;
-  setTemplate: (value: string) => void;
 };
 
 export default function OutreachTemplateTab({
   template,
-  setTemplate,
 }: OutreachTemplateTabProps) {
   return (
     <section className="bg-card p-6 rounded-xl border border-theme space-y-4">
       <h2 className="font-semibold text-lg">Outreach Template</h2>
 
-      <textarea
-        rows={4}
-        value={template}
-        onChange={(e) => setTemplate(e.target.value)}
-        className="w-full px-3 py-2 border border-theme rounded-lg text-sm"
-      />
-
       <div className="text-xs text-subtext">
-        {/* Variables: {{name}}, {{role}}, {{company}} */}
+        Variables: {"{candidate_name}"}, {"{job_title}"}, {"{schedule_link}"}
       </div>
 
       <div className="bg-surface p-4 border mt-2 text-sm rounded-lg">
-        <p className="text-xs text-subtext mb-1">Preview</p>
-        <p>
+        <p className="text-xs text-subtext mb-3">Preview</p>
+        <pre className="whitespace-pre-wrap font-sans">
           {template
-            .replace("{{name}}", "Amit")
-            .replace("{{role}}", "Backend Engineer")
-            .replace("{{company}}", "Emergi Mentors")}
-        </p>
+            .replaceAll("{candidate_name}", "Amit")
+            .replaceAll("{job_title}", "Backend Engineer")
+            .replaceAll(
+              "{schedule_link}",
+              "https://autohire.example/schedule/amit",
+            )}
+        </pre>
       </div>
     </section>
   );

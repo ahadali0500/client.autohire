@@ -7,33 +7,42 @@ import {
   Calendar,
   Bot,
   Activity,
-  BarChart3,
-  Play,
-  Pause,
-  Square,
-  Zap,
   ChevronRight,
   User,
+  Inbox,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import type { ReactNode } from "react";
 import { useGetAllAgents } from "@/hooks/useGetAllAgents";
 import { useDashboard } from "@/hooks/useDashboard";
 
-const badgeColor = {
-  Running: "bg-blue-100 text-blue-600",
-  Completed: "bg-green-100 text-green-600",
-  Paused: "bg-yellow-100 text-yellow-600",
+type DashboardMetrics = {
+  total_candidates?: number;
+  outreach_sent?: number;
+  conversations?: number;
+  interviews?: number;
+  agents_running?: number;
+};
+
+type DashboardLog = {
+  text: string;
+  timestamp: string;
+  status: string;
 };
 
 export default function SystemDashboard() {
   const { data, isLoading } = useGetAllAgents();
-  const agents = (data?.result || []).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 3);
+  const agents = (data?.result || [])
+    .sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    )
+    .slice(0, 3);
 
 
   const { data: dashboardData, isLoading: dashboardLoading } = useDashboard();
-  const metrics = dashboardData?.metrics;
-  const logs = dashboardData?.logs || [];
+  const metrics = dashboardData?.metrics as DashboardMetrics | undefined;
+  const logs = (dashboardData?.logs || []) as DashboardLog[];
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-8">
@@ -57,7 +66,11 @@ export default function SystemDashboard() {
         {dashboardLoading ? (
           <p className="text-sm text-subtext">Loading activity...</p>
         ) : logs.length === 0 ? (
-          <p className="text-sm text-subtext">No activity found</p>
+          <EmptyState
+            icon={<Activity size={28} />}
+            title="No activity found"
+            description="Agent activity will appear here after you create and run an agent."
+          />
         ) : (
           logs.slice(0, 6).map((log, i) => (
             <div
@@ -90,7 +103,19 @@ export default function SystemDashboard() {
         {isLoading ? (
           <p className="text-sm text-subtext">Loading agents...</p>
         ) : agents.length === 0 ? (
-          <p className="text-sm text-subtext">No agents found</p>
+          <EmptyState
+            icon={<Inbox size={28} />}
+            title="No agents found"
+            description="Start a new agent to begin screening candidates and tracking progress."
+            action={
+              <Link
+                href="/agent/new"
+                className="mt-2 inline-flex px-4 py-2 rounded-lg bg-primary text-white text-xs font-medium hover:bg-primary-hover transition"
+              >
+                Start New Agent
+              </Link>
+            }
+          />
         ) : (
           agents.map((s) => (
             <Link
@@ -99,7 +124,7 @@ export default function SystemDashboard() {
               className="group block relative p-6 rounded-2xl bg-card border border-theme shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 overflow-hidden"
             >
               {/* LEFT ACCENT */}
-              <div className={`absolute left-0 top-0 bottom-0 w-1 ${s.state === 'active' ? 'bg-emerald-500' : 'bg-slate-300 opacity-50'}`} />
+              <div className={`absolute left-0 top-0 bottom-0 w-1 ${s.state === 'running' ? 'bg-emerald-500' : 'bg-slate-300 opacity-50'}`} />
 
               <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-6">
 
@@ -188,7 +213,7 @@ export default function SystemDashboard() {
    BEAUTIFUL METRIC GRID
 ============================================================ */
 
-function MetricGrid({ metrics }: any) {
+function MetricGrid({ metrics }: { metrics?: DashboardMetrics }) {
   const data = [
     { label: "Total Candidates", value: metrics?.total_candidates || 0, icon: <Users /> },
     { label: "Outreach Sent", value: metrics?.outreach_sent || 0, icon: <Send /> },
@@ -213,19 +238,27 @@ function MetricGrid({ metrics }: any) {
   );
 }
 
-/* ============================================================
-   CHART (simple animated bars)
-============================================================ */
-function Chart({ data }) {
+function EmptyState({
+  icon,
+  title,
+  description,
+  action,
+}: {
+  icon: ReactNode;
+  title: string;
+  description: string;
+  action?: ReactNode;
+}) {
   return (
-    <div className="flex items-end gap-2 h-48">
-      {data.map((h, i) => (
-        <div
-          key={i}
-          className="flex-1 bg-primary/40 rounded-t-lg transition-all"
-          style={{ height: `${h}%` }}
-        ></div>
-      ))}
+    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-theme bg-surface/60 px-5 py-10 text-center">
+      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+        {icon}
+      </div>
+      <p className="text-sm font-semibold text-text">{title}</p>
+      <p className="mt-1 max-w-sm text-xs leading-5 text-subtext">
+        {description}
+      </p>
+      {action}
     </div>
   );
 }

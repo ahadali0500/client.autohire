@@ -39,7 +39,7 @@ export default function SessionsPage() {
     };
 
     const stateBadgeColor: Record<string, string> = {
-        active: "bg-emerald-500 text-white shadow-emerald-200/50",
+        running: "bg-emerald-500 text-white shadow-emerald-200/50",
         pending: "bg-slate-500 text-white shadow-slate-200/50",
         paused: "bg-amber-500 text-white shadow-amber-200/50",
         stopped: "bg-rose-500 text-white shadow-rose-200/50",
@@ -138,7 +138,7 @@ export default function SessionsPage() {
                         >
                             <option value="All">State: All</option>
                             <option value="pending">Pending</option>
-                            <option value="active">Active</option>
+                            <option value="running">Running</option>
                             <option value="paused">Paused</option>
                             <option value="stopped">Stopped</option>
                             <option value="completed">Finished</option>
@@ -175,7 +175,7 @@ export default function SessionsPage() {
                             className="group relative p-6 rounded-2xl bg-card border border-theme shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 overflow-hidden"
                         >
                             {/* Status Accent Line */}
-                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${s.state === 'active' ? 'bg-emerald-500' : 'bg-slate-300 opacity-50'}`} />
+                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${s.state === 'running' ? 'bg-emerald-500' : 'bg-slate-300 opacity-50'}`} />
                             
                             <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-8">
                                 {/* LEFT SIDE: Info & Current Stage */}

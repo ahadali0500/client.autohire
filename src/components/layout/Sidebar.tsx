@@ -1,7 +1,8 @@
 "use client";
 
-import { BadgePlus, CircleUserRound, Crown, Gem, House, Settings, History, LogOut, MessageSquareText } from 'lucide-react'
+import { BadgePlus, Crown, Gem, House, Settings, History, LogOut } from 'lucide-react'
 import Link from 'next/link';
+import Image from 'next/image';
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { logout } from '@/store/slices/authSlice';
@@ -15,17 +16,17 @@ export default function Sidebar(data: { collapse: boolean }) {
     const router = useRouter();
     const pathname = usePathname();
     const { user, token } = useAppSelector(state => state.auth);
-    const { agents, isLoading } = useAppSelector(state => state.agents);
+    const { agents, isLoading, hasFetched, error } = useAppSelector(state => state.agents);
 
     useEffect(() => {
-        if (token && agents.length === 0 && !isLoading) {
+        if (token && !hasFetched && !isLoading) {
             dispatch(fetchAllAgents(token));
         }
-    }, [token, agents.length, isLoading, dispatch]);
+    }, [token, hasFetched, isLoading, dispatch]);
 
     useEffect(() => {
-        const handler = (e: any) => {
-            if (menuRef.current && !menuRef.current.contains(e.target)) {
+        const handler = (e: MouseEvent) => {
+            if (menuRef.current && e.target instanceof Node && !menuRef.current.contains(e.target)) {
                 setOpenUserMenu(false);
             }
         };
@@ -89,7 +90,7 @@ export default function Sidebar(data: { collapse: boolean }) {
           `}
             >
                 <div className="flex justify-start p-5 mb-2" >
-                    <img src="/assets/img/logo.png" className='w-8 h-8' />
+                    <Image src="/assets/img/logo.png" alt="AutoHire" width={32} height={32} className='w-8 h-8' />
                     {!data.collapse && <h2 className='flex-1 text-lg font-bold flex items-center pl-3 tracking-tight text-text'>AutoHire</h2>}
                 </div>
 
@@ -147,7 +148,7 @@ export default function Sidebar(data: { collapse: boolean }) {
                                 }`}
                             >
                                 <span className="truncate flex-1">{agent.job_title}</span>
-                                {agent.state === 'active' && (
+                                {agent.state === 'running' && (
                                     <div className={`shrink-0 w-1.5 h-1.5 rounded-full bg-emerald-500 ml-2 ${!active && 'animate-pulse'}`} />
                                 )}
                             </Link>
@@ -163,10 +164,21 @@ export default function Sidebar(data: { collapse: boolean }) {
                         </Link>
                     )}
 
-                    {!data.collapse && agents.length === 0 && !isLoading && (
-                        <div className="flex flex-col items-center justify-center py-12 px-4 text-center space-y-2 opacity-20">
-                            <History size={20} strokeWidth={1} />
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em]">Empty</p>
+                    {!data.collapse && hasFetched && !error && agents.length === 0 && !isLoading && (
+                        <div className="flex flex-col items-center justify-center py-12 px-4 text-center space-y-2 text-subtext">
+                            <History size={22} strokeWidth={1.5} />
+                            <p className="text-xs font-semibold text-text">
+                                No recent activity
+                            </p>
+                            <p className="text-[11px] leading-4">
+                                Create an agent to see sessions here.
+                            </p>
+                        </div>
+                    )}
+
+                    {!data.collapse && hasFetched && error && agents.length === 0 && !isLoading && (
+                        <div className="px-3 py-3 text-[11px] text-red-500">
+                            {error}
                         </div>
                     )}
                 </div>

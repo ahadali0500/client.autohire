@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 export default function SignupPage() {
     const router = useRouter();
     const [serverError, setServerError] = useState<string>("");
+    const [successMessage, setSuccessMessage] = useState<string>("");
     const { mutate: signup, isPending } = useSignup();
 
     const {
@@ -24,6 +25,7 @@ export default function SignupPage() {
 
     const onSubmit = async (data: SignupFormData) => {
         setServerError("");
+        setSuccessMessage("");
         signup(
             {
                 name: data.name,
@@ -33,18 +35,35 @@ export default function SignupPage() {
             {
                 onSuccess: (response) => {
                     reset();
-                    // router.push("/dashboard");
-                    console.log(response);
-                    
+                    setSuccessMessage(
+                        response.message ||
+                            "Signup successful. Please sign in to continue."
+                    );
+                    window.setTimeout(() => {
+                        router.push("/signin");
+                    }, 1500);
                 },
-                onError: (error: any) => {
-                    const errorMessage =
-                        error?.response?.data?.message ||
-                        "Signup failed. Please try again.";
-                    setServerError(errorMessage);
+                onError: (error: unknown) => {
+                    setServerError(
+                        getErrorMessage(error, "Signup failed. Please try again.")
+                    );
                 },
             }
         );
+    };
+
+    const getErrorMessage = (error: unknown, fallback: string) => {
+        if (typeof error === "object" && error !== null && "response" in error) {
+            const response = (
+                error as {
+                    response?: { data?: { message?: string } };
+                }
+            ).response;
+
+            return response?.data?.message || fallback;
+        }
+
+        return error instanceof Error ? error.message : fallback;
     };
 
     return (
@@ -56,6 +75,12 @@ export default function SignupPage() {
                 {serverError && (
                     <div className="mb-4 rounded-lg bg-red-500/10 p-3 text-sm text-red-500 border border-red-500/20">
                         {serverError}
+                    </div>
+                )}
+
+                {successMessage && (
+                    <div className="mb-4 rounded-lg bg-green-500/10 p-3 text-sm text-green-600 border border-green-500/20">
+                        {successMessage}
                     </div>
                 )}
 

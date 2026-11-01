@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { API_BASE_URL } from '@/lib/api';
 
 // ─── API Types (based on your real response) ─────────────────────────────────
 
@@ -442,7 +443,7 @@ export default function InterviewScheduler() {
         setLoading(true);
         setError('');
 
-        const res = await fetch(`http://127.0.0.1:8002/agent/candidate/${candidateId}`);
+        const res = await fetch(`${API_BASE_URL}/agent/candidate/${candidateId}`);
 
         if (!res.ok) {
           throw new Error(`Failed to fetch data (${res.status})`);
@@ -497,7 +498,7 @@ export default function InterviewScheduler() {
       setConfirming(true);
 
       const res = await fetch(
-        'http://127.0.0.1:8002/agent/schedule/interview',
+        `${API_BASE_URL}/agent/schedule/interview`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
